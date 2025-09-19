@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/base}">
+<head>
+<title layout:fragment="title">Danh sách danh mục</title>
+</head>
+<body>
+	<section layout:fragment="content" class="container my-3">
+
+		<!-- flash message -->
+		<div th:if="${successMessage}" class="alert alert-success"
+			th:text="${successMessage}"></div>
+		<div th:if="${errorMessage}" class="alert alert-danger"
+			th:text="${errorMessage}"></div>
+
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<h4 class="mb-0">Danh sách danh mục</h4>
+			<a class="btn btn-success" th:href="@{/admin/categories/add}">Thêm
+				mới</a>
+		</div>
+
+		<!-- bộ lọc đơn giản -->
+		<form class="row g-2 mb-3" th:action="@{/admin/categories}"
+			method="get">
+			<div class="col-auto">
+				<input class="form-control" name="q" th:value="${q}"
+					placeholder="Từ khóa...">
+			</div>
+			<div class="col-auto">
+				<select class="form-select" name="status">
+					<option th:selected="${status == null}" th:value="${null}">Tất
+						cả</option>
+					<option th:selected="${status == true}" value="true">Hoạt
+						động</option>
+					<option th:selected="${status == false}" value="false">Ẩn</option>
+				</select>
+			</div>
+			<div class="col-auto">
+				<button class="btn btn-outline-secondary">Lọc</button>
+			</div>
+		</form>
+
+		<div class="table-responsive">
+			<table class="table table-striped align-middle">
+				<thead class="table-light">
+					<tr>
+						<th style="width: 100px">ID</th>
+						<th>Tên danh mục</th>
+						<th style="width: 200px">Mô tả</th>
+						<th style="width: 120px">Trạng thái</th>
+						<th style="width: 120px">Hình ảnh</th>
+						<!-- thêm -->
+						<th style="width: 180px" class="text-end">Thao tác</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="c : ${page.content}">
+						<td th:text="${c.categoryId}"></td>
+						<td th:text="${c.categoryName}"></td>
+						<td th:text="${c.description}"></td>
+						<td><span th:text="${c.status} ? 'Hoạt động' : 'Ẩn'"></span>
+						</td>
+						<td><img th:if="${c.icon != null}"
+							th:src="@{'/images/' + ${c.icon}}" alt="icon"
+							style="height: 40px; width: 40px; object-fit: cover"></td>
+						<td class="text-end"><a
+							class="btn btn-sm btn-outline-primary"
+							th:href="@{'/admin/categories/edit/' + ${c.categoryId}}">Sửa</a>
+							<form
+								th:action="@{'/admin/categories/delete/' + ${c.categoryId}}"
+								method="post" class="d-inline"
+								onsubmit="return confirm('Xoá danh mục này?')">
+								<button class="btn btn-sm btn-outline-danger">Xoá</button>
+							</form></td>
+					</tr>
+					<tr th:if="${#lists.isEmpty(page.content)}">
+						<td colspan="6" class="text-center text-muted">Không có dữ
+							liệu</td>
+					</tr>
+				</tbody>
+
+			</table>
+		</div>
+
+		<!-- phân trang -->
+		<nav th:if="${page.totalPages > 1}">
+			<ul class="pagination justify-content-center">
+				<li class="page-item" th:classappend="${page.first} ? 'disabled'">
+					<a class="page-link"
+					th:href="@{/admin/categories(page=${page.number-1}, q=${q}, status=${status})}">«</a>
+				</li>
+
+				<li class="page-item"
+					th:each="i : ${#numbers.sequence(0, page.totalPages-1)}"
+					th:classappend="${i}==${page.number} ? 'active'"><a
+					class="page-link" th:text="${i+1}"
+					th:href="@{/admin/categories(page=${i}, q=${q}, status=${status})}">1</a>
+				</li>
+
+				<li class="page-item" th:classappend="${page.last} ? 'disabled'">
+					<a class="page-link"
+					th:href="@{/admin/categories(page=${page.number+1}, q=${q}, status=${status})}">»</a>
+				</li>
+			</ul>
+		</nav>
+
+	</section>
+</body>
+</html>

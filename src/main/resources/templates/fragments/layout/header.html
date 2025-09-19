@@ -1,0 +1,16 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:fragment="header">
+  <header class="py-3 mb-3 border-bottom bg-white">
+    <div class="container d-flex align-items-center gap-3" style="max-width:1100px">
+      <!-- Ảnh lấy từ application.properties: app.header-image -->
+      <img th:src="${@environment.getProperty('app.header-image')}"
+           alt="me"
+           style="height:64px;width:64px;object-fit:cover;border-radius:50%" />
+      <div>
+        <h5 class="mb-0">Quản lý</h5>
+        <small class="text-muted">Category</small>
+      </div>
+    </div>
+  </header>
+</body>
+</html>

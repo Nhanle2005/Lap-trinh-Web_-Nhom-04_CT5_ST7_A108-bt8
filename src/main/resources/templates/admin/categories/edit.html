@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+  <title layout:fragment="title">Chỉnh sửa danh mục - Quản lý danh mục</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+  
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a th:href="@{/admin/categories}">
+          <i class="fas fa-home me-1"></i>Trang chủ
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        <a th:href="@{/admin/categories}">
+          <i class="fas fa-tags me-1"></i>Danh mục
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Chỉnh sửa
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Page Header -->
+  <div class="page-header mb-4">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h3 class="mb-0">
+          <i class="fas fa-edit me-2 text-warning"></i>Chỉnh sửa danh mục
+        </h3>
+        <p class="text-muted mb-0">
+          Cập nhật thông tin danh mục: 
+          <span class="fw-bold" th:text="${category.categoryName}">Tên danh mục</span>
+        </p>
+      </div>
+      <div class="col-md-6 text-end">
+        <a th:href="@{/admin/categories}" class="btn btn-outline-secondary">
+          <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">
+            <i class="fas fa-edit me-2"></i>Thông tin danh mục
+          </h6>
+        </div>
+        
+        <form th:action="@{/admin/categories/edit}" th:object="${category}"
+              method="post" enctype="multipart/form-data" novalidate>
+          
+          <div class="card-body">
+            
+            <!-- ID (chỉ hiển thị) -->
+            <div class="mb-4">
+              <label class="form-label text-muted">
+                <i class="fas fa-hashtag me-1"></i>ID danh mục
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-id-badge"></i>
+                </span>
+                <input type="text" class="form-control bg-light" 
+                       th:value="${category.categoryId}" readonly>
+              </div>
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                ID được tạo tự động và không thể thay đổi
+              </div>
+            </div>
+
+            <!-- Tên danh mục -->
+            <div class="mb-4">
+              <label for="categoryName" class="form-label required">
+                <i class="fas fa-tag me-1"></i>Tên danh mục
+              </label>
+              <input type="text" class="form-control" id="categoryName" 
+                     th:field="*{categoryName}" placeholder="Nhập tên danh mục..."
+                     th:class="${#fields.hasErrors('categoryName')} ? 'form-control is-invalid' : 'form-control'">
+              <div th:if="${#fields.hasErrors('categoryName')}" class="invalid-feedback">
+                <span th:errors="*{categoryName}">Lỗi tên danh mục</span>
+              </div>
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                Tên danh mục phải từ 2-200 ký tự và không được trùng lặp
+              </div>
+            </div>
+
+            <!-- Mô tả -->
+            <div class="mb-4">
+              <label for="description" class="form-label">
+                <i class="fas fa-align-left me-1"></i>Mô tả
+              </label>
+              <textarea class="form-control" id="description" rows="4"
+                        th:field="*{description}" placeholder="Nhập mô tả cho danh mục..."
+                        th:class="${#fields.hasErrors('description')} ? 'form-control is-invalid' : 'form-control'"></textarea>
+              <div th:if="${#fields.hasErrors('description')}" class="invalid-feedback">
+                <span th:errors="*{description}">Lỗi mô tả</span>
+              </div>
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                Mô tả chi tiết về danh mục (tối đa 500 ký tự)
+              </div>
+            </div>
+
+            <!-- Icon hiện tại -->
+            <div class="mb-4" th:if="${category.icon != null and !#strings.isEmpty(category.icon)}">
+              <label class="form-label">
+                <i class="fas fa-image me-1"></i>Icon hiện tại
+              </label>
+              <div class="d-flex align-items-center gap-3 p-3 border rounded bg-light">
+                <img th:src="@{'/images/' + ${category.icon}}" 
+                     alt="Current Icon" class="img-thumbnail" 
+                     style="width: 80px; height: 80px; object-fit: cover;"
+                     onerror="this.src='https://via.placeholder.com/80x80/e9ecef/6c757d?text=Error'">
+                <div>
+                  <div class="fw-bold text-success">
+                    <i class="fas fa-check-circle me-1"></i>Đã có icon
+                  </div>
+                  <small class="text-muted">
+                    <i class="fas fa-file me-1"></i>
+                    File: <span th:text="${category.icon}">icon.jpg</span>
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4" th:if="${category.icon == null or #strings.isEmpty(category.icon)}">
+              <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Chưa có icon:</strong> Danh mục này chưa có icon. Bạn có thể upload icon mới bên dưới.
+              </div>
+            </div>
+
+            <!-- Upload icon mới -->
+            <div class="mb-4">
+              <label for="iconFile" class="form-label">
+                <i class="fas fa-upload me-1"></i>Cập nhật icon mới
+              </label>
+              <div class="input-group">
+                <input type="file" class="form-control" id="iconFile" name="iconFile" 
+                       accept="image/*" onchange="previewImage(this)">
+                <label class="input-group-text" for="iconFile">
+                  <i class="fas fa-folder-open"></i>
+                </label>
+              </div>
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                Để trống nếu không muốn thay đổi icon. Chọn file ảnh (JPG, PNG, GIF) tối đa 5MB
+              </div>
+              
+              <!-- Image preview -->
+              <div id="imagePreview" class="mt-3" style="display: none;">
+                <p class="small text-muted mb-2">
+                  <i class="fas fa-eye me-1"></i>Xem trước icon mới:
+                </p>
+                <img id="previewImg" src="" alt="Preview" 
+                     class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+              </div>
+            </div>
+
+            <!-- Trạng thái -->
+            <div class="mb-4">
+              <label class="form-label">
+                <i class="fas fa-toggle-on me-1"></i>Trạng thái
+              </label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="status" 
+                       th:field="*{status}" th:checked="*{status}">
+                <label class="form-check-label" for="status">
+                  <span class="status-text" th:text="*{status} ? 'Đang hoạt động' : 'Vô hiệu hóa'">
+                    Đang hoạt động
+                  </span>
+                </label>
+              </div>
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                Danh mục sẽ hiển thị trong hệ thống khi được kích hoạt
+              </div>
+            </div>
+
+            <!-- Thông tin thời gian -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">
+                  <i class="fas fa-calendar-plus me-1"></i>Ngày tạo
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-clock"></i>
+                  </span>
+                  <input type="text" class="form-control bg-light" 
+                         th:value="${#temporals.format(category.createdAt, 'dd/MM/yyyy HH:mm:ss')}" 
+                         readonly>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3" th:if="${category.updatedAt != null}">
+                <label class="form-label text-muted">
+                  <i class="fas fa-calendar-edit me-1"></i>Cập nhật lần cuối
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-clock"></i>
+                  </span>
+                  <input type="text" class="form-control bg-light" 
+                         th:value="${#temporals.format(category.updatedAt, 'dd/MM/yyyy HH:mm:ss')}" 
+                         readonly>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-6">
+                <button type="submit" class="btn btn-warning me-2">
+                  <i class="fas fa-save me-2"></i>Cập nhật danh mục
+                </button>
+                <button type="reset" class="btn btn-outline-secondary">
+                  <i class="fas fa-undo me-2"></i>Khôi phục
+                </button>
+              </div>
+              <div class="col-md-6 text-end">
+                <a th:href="@{'/admin/categories/view/' + ${category.categoryId}}" 
+                   class="btn btn-outline-info me-2">
+                  <i class="fas fa-eye me-2"></i>Xem chi tiết
+                </a>
+                <a th:href="@{/admin/categories}" class="btn btn-outline-secondary">
+                  <i class="fas fa-times me-2"></i>Hủy bỏ
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hidden fields -->
+          <input type="hidden" th:field="*{categoryId}"/>
+          <input type="hidden" th:field="*{icon}"/>
+          <input type="hidden" th:field="*{edit}" th:value="true"/>
+          <input type="hidden" th:field="*{createdAt}"/>
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          
+        </form>
+      </div>
+      
+      <!-- Warning Card -->
+      <div class="card mt-4 border-warning">
+        <div class="card-header bg-warning bg-opacity-10">
+          <h6 class="mb-0 text-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>Lưu ý quan trọng
+          </h6>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled mb-0 small">
+            <li class="mb-2">
+              <i class="fas fa-info-circle text-info me-2"></i>
+              Thay đổi tên danh mục có thể ảnh hưởng đến các sản phẩm liên quan
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-info-circle text-info me-2"></i>
+              Upload icon mới sẽ thay thế hoàn toàn icon cũ
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-info-circle text-info me-2"></i>
+              Vô hiệu hóa danh mục sẽ ẩn nó khỏi giao diện người dùng
+            </li>
+            <li class="mb-0">
+              <i class="fas fa-info-circle text-info me-2"></i>
+              Thời gian cập nhật sẽ được ghi nhận tự động
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<th:block layout:fragment="head">
+<style>
+.required::after {
+  content: ' *';
+  color: #dc3545;
+}
+
+.img-thumbnail {
+  border: 2px dashed #dee2e6;
+  background-color: #f8f9fa;
+}
+
+.form-check-input:checked + .form-check-label .status-text {
+  color: #198754;
+  font-weight: 500;
+}
+
+.form-check-input:not(:checked) + .form-check-label .status-text {
+  color: #6c757d;
+  font-weight: 500;
+}
+</style>
+</th:block>
+
+<th:block layout:fragment="scripts">
+<script>
+function previewImage(input) {
+  const preview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+  
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      preview.style.display = 'block';
+    }
+    
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+// Update status text based on checkbox
+document.getElementById('status').addEventListener('change', function() {
+  const statusText = document.querySelector('.status-text');
+  statusText.textContent = this.checked ? 'Đang hoạt động' : 'Vô hiệu hóa';
+});
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+  const categoryName = document.getElementById('categoryName').value.trim();
+  
+  if (!categoryName) {
+    e.preventDefault();
+    alert('Vui lòng nhập tên danh mục!');
+    document.getElementById('categoryName').focus();
+    return false;
+  }
+  
+  if (categoryName.length < 2) {
+    e.preventDefault();
+    alert('Tên danh mục phải có ít nhất 2 ký tự!');
+    document.getElementById('categoryName').focus();
+    return false;
+  }
+});
+
+// Auto-resize textarea
+document.getElementById('description').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = (this.scrollHeight) + 'px';
+});
+
+// Character counter for description
+document.getElementById('description').addEventListener('input', function() {
+  const current = this.value.length;
+  const max = 500;
+  const remaining = max - current;
+  
+  let counterElement = document.getElementById('descCounter');
+  if (!counterElement) {
+    counterElement = document.createElement('div');
+    counterElement.id = 'descCounter';
+    counterElement.className = 'form-text text-end';
+    this.parentNode.appendChild(counterElement);
+  }
+  
+  counterElement.innerHTML = remaining >= 0 
+    ? `<i class="fas fa-info-circle me-1"></i>Còn lại: ${remaining} ký tự`
+    : `<i class="fas fa-exclamation-triangle me-1"></i><span class="text-danger">Vượt quá ${Math.abs(remaining)} ký tự</span>`;
+});
+
+// Reset form functionality
+document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
+  if (!confirm('Bạn có chắc chắn muốn khôi phục dữ liệu ban đầu?')) {
+    e.preventDefault();
+  } else {
+    // Hide image preview on reset
+    document.getElementById('imagePreview').style.display = 'none';
+  }
+});
+</script>
+</th:block>
+
+</body>
+</html>

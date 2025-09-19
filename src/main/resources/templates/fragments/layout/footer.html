@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer">
+  <div class="container text-center py-3">
+    <p class="text-muted mb-0">
+      Sinh viên: <span th:text="${@environment.getProperty('app.student.name')}"></span> -
+      MSSV: <span th:text="${@environment.getProperty('app.student.info')}"></span>
+    </p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi" 
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Breadcrumb fragment -->
+<nav th:fragment="breadcrumb" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a th:href="@{/admin/categories}">
+        <i class="fas fa-home me-1"></i>Trang chủ
+      </a>
+    </li>
+    <li class="breadcrumb-item">
+      <a th:href="@{/admin/categories}">Danh mục</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page" 
+        th:text="${pageTitle ?: 'Danh sách'}">
+    </li>
+  </ol>
+</nav>
+
+<!-- Category breadcrumb with specific pages -->
+<nav th:fragment="categoryBreadcrumb(pageTitle)" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a th:href="@{/admin/categories}">
+        <i class="fas fa-home me-1"></i>Trang chủ
+      </a>
+    </li>
+    <li class="breadcrumb-item">
+      <a th:href="@{/admin/categories}">
+        <i class="fas fa-tags me-1"></i>Danh mục
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page" th:text="${pageTitle}">
+    </li>
+  </ol>
+</nav>
+
+</body>
+</html>
