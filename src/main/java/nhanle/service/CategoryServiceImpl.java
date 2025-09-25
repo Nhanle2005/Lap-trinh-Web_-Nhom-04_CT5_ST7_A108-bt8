@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -163,5 +161,10 @@ public class CategoryServiceImpl implements CategoryService {
   @Override
   public List<Category> findTop10ByOrderByCreatedAtDesc() {
     return repository.findTop10ByOrderByCreatedAtDesc();
+  }
+
+  @Override
+  public List<Category> findByStatus(Boolean status) {
+    return repository.findByStatus(status);
   }
 }

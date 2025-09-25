@@ -53,4 +53,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
   long countByStatus(Boolean status);
 
   List<Category> findTop10ByOrderByCreatedAtDesc();
+  
+  List<Category> findByStatus(Boolean status);
 }

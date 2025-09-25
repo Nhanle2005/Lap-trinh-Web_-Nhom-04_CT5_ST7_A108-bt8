@@ -1,8 +1,9 @@
 package nhanle.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 public class CategoryModel {
 
@@ -21,6 +22,8 @@ public class CategoryModel {
 
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+  
+  private Long productCount; // For API responses
 
   // ===== Getter & Setter =====
   public Long getCategoryId() { return categoryId; }
@@ -46,4 +49,7 @@ public class CategoryModel {
 
   public LocalDateTime getUpdatedAt() { return updatedAt; }
   public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+  
+  public Long getProductCount() { return productCount; }
+  public void setProductCount(Long productCount) { this.productCount = productCount; }
 }

@@ -43,4 +43,6 @@ public interface CategoryService {
   Category changeStatus(Long id);
 
   List<Category> findTop10ByOrderByCreatedAtDesc();
+  
+  List<Category> findByStatus(Boolean status);
 }

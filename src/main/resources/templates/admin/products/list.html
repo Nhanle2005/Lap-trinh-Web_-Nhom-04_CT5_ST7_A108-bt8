@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/layout-admin">
+
+<head>
+    <title>Quản lý sản phẩm</title>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" 
+          href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+
+<body>
+    <div layout:fragment="content" class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Quản lý sản phẩm</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-primary" id="btnAddProduct">
+                                <i class="fas fa-plus"></i> Thêm sản phẩm
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- Filter controls -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="categoryFilter">Danh mục:</label>
+                                <select class="form-control" id="categoryFilter">
+                                    <option value="">Tất cả danh mục</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="statusFilter">Trạng thái:</label>
+                                <select class="form-control" id="statusFilter">
+                                    <option value="true">Đang hoạt động</option>
+                                    <option value="false">Đã xóa</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="searchKeyword">Tìm kiếm:</label>
+                                <input type="text" class="form-control" id="searchKeyword" placeholder="Tên sản phẩm...">
+                            </div>
+                        </div>
+                        
+                        <!-- Products table -->
+                        <table id="productsTable" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Hình ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Danh mục</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded via AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">Thêm sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="productForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="productId" name="productId">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="productName" class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="productName" name="productName" required maxlength="200">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="categoryId" class="form-label">Danh mục <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="categoryId" name="categoryId" required>
+                                        <option value="">Chọn danh mục</option>
+                                    </select>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="price" class="form-label">Giá <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="price" name="price" required min="0" step="0.01">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="quantity" class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" required min="0">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="description" class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="image" class="form-label">Hình ảnh</label>
+                            <input type="text" class="form-control" id="image" name="image" placeholder="URL hình ảnh">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="status" name="status" checked>
+                                <label class="form-check-label" for="status">Đang hoạt động</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary" id="btnSaveProduct">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <div layout:fragment="scripts">
+        <!-- DataTables JS -->
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+        <!-- SweetAlert2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- Product management JS -->
+        <script th:src="@{/js/product-management.js}"></script>
+    </div>
+</body>
+</html>

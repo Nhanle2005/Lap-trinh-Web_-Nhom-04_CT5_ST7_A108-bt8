@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/layout-admin">
+
+<head>
+    <title>Thêm sản phẩm</title>
+</head>
+
+<body>
+    <div layout:fragment="content" class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Thêm sản phẩm mới</h3>
+                        <div class="card-tools">
+                            <a th:href="@{/admin/products}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form id="addProductForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="productName" class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="productName" name="productName" required maxlength="200">
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="categoryId" class="form-label">Danh mục <span class="text-danger">*</span></label>
+                                        <select class="form-control" id="categoryId" name="categoryId" required>
+                                            <option value="">Chọn danh mục</option>
+                                        </select>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="price" class="form-label">Giá <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="price" name="price" required min="0" step="0.01">
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="quantity" class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="quantity" name="quantity" required min="0">
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="description" class="form-label">Mô tả</label>
+                                <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="image" class="form-label">Hình ảnh</label>
+                                <input type="text" class="form-control" id="image" name="image" placeholder="URL hình ảnh">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="status" name="status" checked>
+                                    <label class="form-check-label" for="status">Đang hoạt động</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Lưu sản phẩm
+                                </button>
+                                <a th:href="@{/admin/products}" class="btn btn-secondary ml-2">
+                                    <i class="fas fa-times"></i> Hủy
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <div layout:fragment="scripts">
+        <script>
+            $(document).ready(function() {
+                // Load categories for select box
+                loadCategories();
+                
+                // Handle form submission
+                $('#addProductForm').on('submit', function(e) {
+                    e.preventDefault();
+                    createProduct();
+                });
+            });
+            
+            function loadCategories() {
+                $.ajax({
+                    url: '/api/categories',
+                    type: 'GET',
+                    data: { status: true },
+                    success: function(categories) {
+                        const categorySelect = $('#categoryId');
+                        categorySelect.empty().append('<option value="">Chọn danh mục</option>');
+                        
+                        categories.forEach(function(category) {
+                            categorySelect.append(
+                                `<option value="${category.categoryId}">${category.categoryName}</option>`
+                            );
+                        });
+                    },
+                    error: function(xhr) {
+                        console.error('Error loading categories:', xhr.responseJSON);
+                    }
+                });
+            }
+            
+            function createProduct() {
+                const formData = {
+                    productName: $('#productName').val(),
+                    categoryId: $('#categoryId').val(),
+                    price: $('#price').val(),
+                    quantity: $('#quantity').val(),
+                    description: $('#description').val(),
+                    image: $('#image').val(),
+                    status: $('#status').is(':checked')
+                };
+                
+                $.ajax({
+                    url: '/api/products',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        alert('Thêm sản phẩm thành công!');
+                        window.location.href = '/admin/products';
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 400) {
+                            displayValidationErrors(xhr.responseJSON);
+                        } else {
+                            alert('Có lỗi xảy ra: ' + (xhr.responseJSON?.message || 'Lỗi không xác định'));
+                        }
+                    }
+                });
+            }
+            
+            function displayValidationErrors(errors) {
+                // Clear previous errors
+                $('.form-control').removeClass('is-invalid');
+                $('.invalid-feedback').text('');
+                
+                // Display new errors
+                for (const field in errors) {
+                    const input = $(`[name="${field}"]`);
+                    input.addClass('is-invalid');
+                    input.siblings('.invalid-feedback').text(errors[field]);
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>
